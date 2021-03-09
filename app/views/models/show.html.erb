@@ -1,0 +1,116 @@
+<div>
+  <div>
+    <h1>
+      Model #<%= @the_model.id %> details
+    </h1>
+
+    <div>
+      <div>
+        <a href="/models">
+          Go back
+        </a>
+      </div>
+
+      <div>
+        <a href="/delete_model/<%= @the_model.id %>">
+          Delete model
+        </a>
+      </div>
+    </div>
+
+    <dl>
+      <dt>
+        Name
+      </dt>
+      <dd>
+        <%= @the_model.name %>
+      </dd>
+
+      <dt>
+        Make
+      </dt>
+      <dd>
+        <%= @the_model.make_id %>
+      </dd>
+
+      <dt>
+        Image
+      </dt>
+      <dd>
+        <%= @the_model.image %>
+      </dd>
+
+      <dt>
+        Webpage
+      </dt>
+      <dd>
+        <%= @the_model.webpage %>
+      </dd>
+
+      <dt>
+        Created at
+      </dt>
+      <dd>
+        <%= time_ago_in_words(@the_model.created_at) %> ago
+      </dd>
+
+      <dt>
+        Updated at
+      </dt>
+      <dd>
+        <%= time_ago_in_words(@the_model.updated_at) %> ago
+      </dd>
+    </dl>
+  </div>
+</div>
+
+<hr>
+
+
+<div>
+  <div>
+    <h2>
+      Edit model
+    </h2>
+
+    <form action="/modify_model/<%= @the_model.id %>"  method="post" >
+      <div>
+        <label for="name_box">
+          Name
+        </label>
+
+        <input type="text" id="name_box" name="query_name" value="<%= @the_model.name %>">
+      </div>
+
+      <div>
+        <label for="make_id_box">
+          Make
+        </label>
+
+        <input type="text" id="make_id_box" name="query_make_id" value="<%= @the_model.make_id %>">
+      </div>
+
+      <div>
+        <label for="image_box">
+          Image
+        </label>
+
+        <input type="text" id="image_box" name="query_image" value="<%= @the_model.image %>">
+      </div>
+
+      <div>
+        <label for="webpage_box">
+          Webpage
+        </label>
+
+        <input type="text" id="webpage_box" name="query_webpage" value="<%= @the_model.webpage %>">
+      </div>
+
+      <button>
+        Update model
+      </button>
+    </form>
+  </div>
+</div>
+
+<hr>

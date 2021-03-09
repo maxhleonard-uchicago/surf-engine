@@ -1,0 +1,116 @@
+<div>
+  <div>
+    <h1>
+      Distance #<%= @the_distance.id %> details
+    </h1>
+
+    <div>
+      <div>
+        <a href="/distances">
+          Go back
+        </a>
+      </div>
+
+      <div>
+        <a href="/delete_distance/<%= @the_distance.id %>">
+          Delete distance
+        </a>
+      </div>
+    </div>
+
+    <dl>
+      <dt>
+        Origin
+      </dt>
+      <dd>
+        <%= @the_distance.origin %>
+      </dd>
+
+      <dt>
+        Destination
+      </dt>
+      <dd>
+        <%= @the_distance.destination %>
+      </dd>
+
+      <dt>
+        Distance
+      </dt>
+      <dd>
+        <%= @the_distance.distance %>
+      </dd>
+
+      <dt>
+        Duration
+      </dt>
+      <dd>
+        <%= @the_distance.duration %>
+      </dd>
+
+      <dt>
+        Created at
+      </dt>
+      <dd>
+        <%= time_ago_in_words(@the_distance.created_at) %> ago
+      </dd>
+
+      <dt>
+        Updated at
+      </dt>
+      <dd>
+        <%= time_ago_in_words(@the_distance.updated_at) %> ago
+      </dd>
+    </dl>
+  </div>
+</div>
+
+<hr>
+
+
+<div>
+  <div>
+    <h2>
+      Edit distance
+    </h2>
+
+    <form action="/modify_distance/<%= @the_distance.id %>"  method="post" >
+      <div>
+        <label for="origin_box">
+          Origin
+        </label>
+
+        <input type="text" id="origin_box" name="query_origin" value="<%= @the_distance.origin %>">
+      </div>
+
+      <div>
+        <label for="destination_box">
+          Destination
+        </label>
+
+        <input type="text" id="destination_box" name="query_destination" value="<%= @the_distance.destination %>">
+      </div>
+
+      <div>
+        <label for="distance_box">
+          Distance
+        </label>
+
+        <input type="text" id="distance_box" name="query_distance" value="<%= @the_distance.distance %>">
+      </div>
+
+      <div>
+        <label for="duration_box">
+          Duration
+        </label>
+
+        <input type="text" id="duration_box" name="query_duration" value="<%= @the_distance.duration %>">
+      </div>
+
+      <button>
+        Update distance
+      </button>
+    </form>
+  </div>
+</div>
+
+<hr>

@@ -1,0 +1,380 @@
+
+<script>
+  function displayModels (){
+    var testing = document.getElementById("testing");
+    testing.innerText = "one";
+    var modelSelect = document.getElementById("model");
+    modelSelect.disabled = true;
+    var i, L = modelSelect.options.length - 1;
+    for(i = L; i >= 1; i--) {
+      modelSelect.remove(i);
+    }
+    testing.innerText = "two";
+    var ind = document.getElementById("make").value;
+    if (ind != "-1") {
+      fetch(`/makes/${ind}/models.json`)
+      .then(response => response.json())
+      .then((data) => {
+        data.forEach(model => {
+          
+          var option = document.createElement("option");
+          option.text = model["model"]["name"];
+          option.value = model["model"]["id"];
+          modelSelect.add(option);
+        });
+        
+        modelSelect.disabled = false;
+      })
+    }
+  }
+
+  function convertWidth(sixteen) {
+    if (sixteen == 0) {
+      var fraction = ""
+    } else if (sixteen == 2) {
+      var fraction = "1/8";
+    } else if (sixteen == 4) {
+      var fraction = "1/4";
+    } else if (sixteen == 6) {
+      var fraction = "3/8";
+    } else if (sixteen == 8) {
+      var fraction = "1/2";
+    } else if (sixteen == 10) {
+      var fraction = "5/8";
+    } else if (sixteen == 12) {
+      var fraction = "3/4";
+    } else if (sixteen == 14) {
+      var fraction = "7/8";
+    } else {
+      var fraction = sixteen.toString() + "/16";
+    }
+    return fraction
+  }
+
+  function sliderChange(field, side){
+    
+    var maxSlider = document.getElementById("max_" + field);
+    var minSlider = document.getElementById("min_" + field);
+    var maxLabel = document.getElementById("max_" + field + "_label");
+    var minLabel = document.getElementById("min_" + field + "_label");
+    
+
+    
+
+    minSlider.max = maxSlider.value;
+    maxSlider.min = minSlider.value;
+    
+    if (field == "length") {
+      
+      let min_feet = Math.floor(minSlider.value / 12);
+      let min_inches = minSlider.value % 12;
+      let max_feet = Math.floor(maxSlider.value / 12);
+      let max_inches = maxSlider.value % 12;
+  
+      maxLabel.innerText = "Maximum: " + max_feet.toString() + "'" + max_inches.toString() + '"';
+      minLabel.innerText = "Minimum: " + min_feet.toString() + "'" + min_inches.toString() + '"';
+
+    } else if (field == "width" || field == "thickness") {
+      let min_inches = Math.floor(minSlider.value / 16);
+      let sixteen_min = minSlider.value % 16;
+      minLabel.innerText = "Minimum: " + min_inches.toString() + " " + convertWidth(sixteen_min);
+      let max_inches = Math.floor(maxSlider.value / 16);
+      let sixteen_max = maxSlider.value % 16;
+      maxLabel.innerText = "Maximum: " + max_inches.toString() + " " + convertWidth(sixteen_max);
+    } else if (field == "volume") {
+      maxLabel.innerText = "Maximum: " + maxSlider.value.toString() + " L";
+      minLabel.innerText = "Minimum: " + minSlider.value.toString() + " L";
+    } else if (field == "price") {
+      maxLabel.innerText = "Maximum: $" + maxSlider.value.toString();
+      minLabel.innerText = "Maximum: $" + minSlider.value.toString();
+    }
+  }
+  
+
+  function enableFields(field) {
+    if (field == "length") {
+      document.getElementById("min_length").disabled = !document.getElementById("min_length").disabled;
+      document.getElementById("max_length").disabled = !document.getElementById("max_length").disabled;
+    } else if (field == "width") {
+      document.getElementById("min_width").disabled = !document.getElementById("min_width").disabled;
+      document.getElementById("max_width").disabled = !document.getElementById("max_width").disabled;
+    } else if (field == "thickness") {
+      document.getElementById("min_thickness").disabled = !document.getElementById("min_thickness").disabled;
+      document.getElementById("max_thickness").disabled = !document.getElementById("max_thickness").disabled;
+    } else if (field == "volume") {
+      document.getElementById("min_volume").disabled = !document.getElementById("min_volume").disabled;
+      document.getElementById("max_volume").disabled = !document.getElementById("max_volume").disabled;
+    } else if (field == "price") {
+      document.getElementById("min_price").disabled = !document.getElementById("min_price").disabled;
+      document.getElementById("max_price").disabled = !document.getElementById("max_price").disabled;
+    }
+  }
+
+  function shopName() {
+    if (document.getElementById("store").checked) {
+      document.getElementById("shop_name").disabled = false;
+    } else {
+      document.getElementById("shop_name").disabled = true;
+    }
+  }
+
+</script>
+
+
+<% if @current_user != nil %>
+  <div class="w=100 text-center">
+    <h2>Boards for you!</h2>
+  </div>
+<% end %>
+<div class="container-fluid overflow-auto">
+  <div class="row">
+    <div class="col-3">
+      <div class="text-center align-middle p-2">
+        <h3>Board Search</h3>
+      </div>
+      <div>
+        <form action="/results">
+          <div id="accordion" role="tablist">
+            <div class="card">
+              <div class="card-header" role="tab" id="headingShaper">
+                <h5 class="mb-0">
+                  <a data-toggle="collapse" href="#collapseShaper" aria-expanded="true" aria-controls="collapseShaper">
+                    Shaper/Model
+                  </a>
+                </h5>
+              </div>
+
+              <div id="collapseShaper" class="collapse" role="tabpanel" aria-labelledby="headingShaper">
+                <div class="card-body">
+                  <div class="form-group">
+                    <label for="make">Make</label>
+                    <select class="form-select form-control" id="make" name="make" aria-label="Choose Make" onchange="displayModels()">
+                      <option selected value="-1">...</option>
+                      <% @makes.each do |brand|%>
+                        <option value="<%= brand.id%>"><%= brand.name %></option>
+                      <% end %>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="model">Model</label>
+                    <select class="form-select form-control" id="model" name="model" aria-label="Choose Model" disabled>
+                      <option value="-1" selected>...</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header" role="tab" id="headingDims">
+                <h5 class="mb-0">
+                  <a class="collapsed" data-toggle="collapse" href="#collapseDims" aria-expanded="false" aria-controls="collapseDims">
+                    Dimensions
+                  </a>
+                </h5>
+              </div>
+              <div id="collapseDims" class="collapse" role="tabpanel" aria-labelledby="headingDims">
+                <div class="card-body">
+                  <div class="form-group">
+                    <div class="custom-control custom-checkbox m-2">
+                      <input type="checkbox" class="custom-control-input" id="length" name="length" value="1" onclick="enableFields('length')">
+                      <label class="custom-control-label" for="length">Length</label>
+                    </div>
+                    <label for="min_length" id="min_length_label">Minimum: 5'0"</label>
+                    <input type="range" class="custom-range" min="48" max="72" step="1" value="60" id="min_length" name="min_length" onchange="sliderChange('length', 'min')" disabled>
+                    <label for="max_length" id="max_length_label">Maximum: 6'0"</label>
+                    <input type="range" class="custom-range" min="72" max="120" step="1" value="72" id="max_length" name="max_length" onchange="sliderChange('length', 'max')" disabled>
+                  </div>
+                  <hr>
+
+                  <div class="form-group">
+                    <div class="custom-control custom-checkbox m-2">
+                      <input type="checkbox" class="custom-control-input" id="width" name="width" value="1" onclick="enableFields('width')">
+                      <label class="custom-control-label" for="width">Width</label>
+                    </div>
+                    <label for="min_width" id="min_width_label">Minimum: 18 1/4</label>
+                    <input type="range" class="custom-range" min="272" max="300" step="1" value="292" id="min_width" name="min_width" onchange="sliderChange('width', 'min')" disabled>
+                    <label for="max_width" id="max_width_label">Maximum: 18 3/8</label>
+                    <input type="range" class="custom-range" min="292" max="384" step="1" value="300" id="max_width" name="max_width" onchange="sliderChange('width', 'max')" disabled>
+                  </div>
+                  <hr>
+
+                  <div class="form-group">
+                    <div class="custom-control custom-checkbox m-2">
+                      <input type="checkbox" class="custom-control-input" id="thickness" name="thickness" value="1" onclick="enableFields('thickness')">
+                      <label class="custom-control-label" for="thickness">Thickness</label>
+                    </div>
+                    <label for="min_thickness" id="min_thickness_label">Minimum: 2 1/4</label>
+                    <input type="range" class="custom-range" min="32" max="44" step="1" value="36" id="min_thickness" name="min_thickness" onchange="sliderChange('thickness', 'min')" disabled>
+                    <label for="max_thickness" id="max_thickness_label">Maximum: 2 3/4</label>
+                    <input type="range" class="custom-range" min="36" max="64" step="1" value="44" id="max_thickness" name="max_thickness" onchange="sliderChange('thickness', 'max')" disabled>
+                  </div>
+                  <hr>
+
+                  <div class="form-group">
+                    <div class="custom-control custom-checkbox m-2">
+                      <input type="checkbox" class="custom-control-input" id="volume" name="volume" value="1" onclick="enableFields('volume')">
+                      <label class="custom-control-label" for="volume">Volume</label>
+                    </div>
+                    <label for="min_volume" id="min_volume_label">Minimum: 20 L</label>
+                    <input type="range" class="custom-range" min="17" max="30" step="0.1" value="20" id="min_volume" name="min_volume" onchange="sliderChange('volume', 'min')" disabled>
+                    <label for="max_volume" id="max_volume_label">Maximum: 30 L</label>
+                    <input type="range" class="custom-range" min="20" max="60" step="0.1" value="30" id="max_volume" name="max_volume" onchange="sliderChange('volume', 'max')" disabled>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header" role="tab" id="headingPrice">
+                <h5 class="mb-0">
+                  <a data-toggle="collapse" href="#collapsePrice" aria-expanded="false" aria-controls="collapsePrice">
+                    Price/Condition
+                  </a>
+                </h5>
+              </div>
+
+              <div id="collapsePrice" class="collapse" role="tabpanel" aria-labelledby="headingPrice">
+                <div class="card-body">
+                  <div class="form-group">
+                    <div class="custom-control custom-checkbox m-2">
+                      <input type="checkbox" class="custom-control-input" id="price" name="price" value="1" onclick="enableFields('price')">
+                      <label class="custom-control-label" for="price">Price</label>
+                    </div>
+                    <label for="min_price" id="min_price_label">Minimum: $400</label>
+                    <input type="range" class="custom-range" min="0" max="800" step="1" value="400" id="min_price" name="min_price" onchange="sliderChange('price', 'min')" disabled>
+                    <label for="max_price" id="max_price_label">Maximum: $800</label>
+                    <input type="range" class="custom-range" min="400" max="2000" step="1" value="800" id="max_price" name="max_price" onchange="sliderChange('price', 'max')" disabled>
+                  </div>
+                  <hr>
+                  <div class="form-group">
+                    <label for="condition">Condition</label>
+                    <select class="form-select form-control" id="condition" name="condition" aria-label="Choose Condition">
+                      <option value="-1" selected>Any</option>
+                      <option value="0">Damaged</option>
+                      <option value="1">Used</option>
+                      <option value="2">Like New</option>
+                      <option value="3">New</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header" role="tab" id="headingLocation">
+                <h5 class="mb-0">
+                  <a data-toggle="collapse" href="#collapseLocation" aria-expanded="false" aria-controls="collapseLocation">
+                    Location
+                  </a>
+                </h5>
+              </div>
+
+              <div id="collapseLocation" class="collapse" role="tabpanel" aria-labelledby="headingLocation">
+                  <div class="card-body">
+                    
+                    <div class="form-group">
+                      <label for="driving_time">Driving time</label>
+                      <select class="form-select form-control" id="driving_time" name="driving_time" aria-label="Choose Driving Time">
+                        <option value="-1">Any</option>
+                        <option value="360">Less than 6 hours</option>
+                        <option value="120">Less than 2 hours</option>
+                        <option value="60">Less than 1 hour</option>
+                        <option value="30">Less than 30 minutes</option>
+                        <option value="15">Less than 15 minutes</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="address">From address</label>
+                      <input type="text" id="address" name="address" class="form-control">
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header" role="tab" id="headingOther">
+                <h5 class="mb-0">
+                  <a data-toggle="collapse" href="#collapseOther" aria-expanded="false" aria-controls="collapseOther">
+                    Other
+                  </a>
+                </h5>
+              </div>
+
+              <div id="collapseOther" class="collapse" role="tabpanel" aria-labelledby="headingOther">
+                <div class="card-body">
+                  <div class="form-group">
+                    <label for="tail">Tail Shape</label>
+                    <select class="form-select form-control" id="tail" name="tail" aria-label="Choose Tail">
+                      <option value="-1" selected>Any</option>
+                      <option value="0">Squash</option>
+                      <option value="1">Square</option>
+                      <option value="2">Round</option>
+                      <option value="3">Pin</option>
+                      <option value="4">Swallow</option>
+                      <option value="5">Bat</option>
+                      <option value="6">Diamond</option>
+                    </select>
+                  </div>
+                  <hr>
+                  <div class="form-group">
+                    <label for="fin_config">Fin Configuration</label>
+                    <select class="form-select form-control" id="fin_config" name="fin_config" aria-label="Choose Fin Config">
+                      <option value="-1" selected>Any</option>
+                      <option value="0">3 fin</option>
+                      <option value="1">5 fin</option>
+                      <option value="2">Twin</option>
+                      <option value="3">Single Fin</option>
+                      <option value="4">2+1</option>
+                      <option value="5">Asymmetric</option>
+                      <option value="6">Other</option>
+                    </select>
+                  </div>
+                  <hr>
+                  <div class="form-group">
+                    <label for="fin_system">Fin System</label>
+                    <select class="form-select form-control" id="fin_system" name="fin_system" aria-label="Choose Fin System">
+                      <option value="-1" selected>Any</option>
+                      <option value="0">FCS</option>
+                      <option value="1">Futures</option>
+                      <option value="2">Glass-on</option>
+                      <option value="3">Other</option>
+                    </select>
+                  </div>
+                  <hr>
+                  <div class="form-group">
+                    <label for="construction">Construction</label>
+                    <select class="form-select form-control" id="construction" name="construction" aria-label="Choose Construction">
+                      <option value="-1" selected>Any</option>
+                      <option value="0">PU</option>
+                      <option value="1">EPS</option>
+                      <option value="2">Wood</option>
+                      <option value="3">Other</option>
+                    </select>
+                  </div>
+                  <hr>
+                  <div class="form-group">
+                    <div class="custom-control custom-switch">
+                      <input type="checkbox" value="1" class="custom-control-input" id="artwork">
+                      <label class="custom-control-label" for="artwork">Must have non-stock graphics</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="p-2">
+            <button type="submit" class="btn btn-primary btn-block">Search</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    </div>
+    <div class="col border">
+      <% if @search %>
+        <% @boards.each do |board|%>
+          <h1><%= board.model.name %></h1>
+        <% end %>
+      <% else %>
+        <h1>Select some filters to find boards!</h1>
+      <% end %>
+    </div>
+  </div>
+</div>
+

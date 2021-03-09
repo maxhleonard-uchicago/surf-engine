@@ -1,0 +1,116 @@
+<div>
+  <div>
+    <h1>
+      Shop #<%= @the_shop.id %> details
+    </h1>
+
+    <div>
+      <div>
+        <a href="/shops">
+          Go back
+        </a>
+      </div>
+
+      <div>
+        <a href="/delete_shop/<%= @the_shop.id %>">
+          Delete shop
+        </a>
+      </div>
+    </div>
+
+    <dl>
+      <dt>
+        Name
+      </dt>
+      <dd>
+        <%= @the_shop.name %>
+      </dd>
+
+      <dt>
+        Address
+      </dt>
+      <dd>
+        <%= @the_shop.address %>
+      </dd>
+
+      <dt>
+        Website
+      </dt>
+      <dd>
+        <%= @the_shop.website %>
+      </dd>
+
+      <dt>
+        Logo
+      </dt>
+      <dd>
+        <%= @the_shop.logo %>
+      </dd>
+
+      <dt>
+        Created at
+      </dt>
+      <dd>
+        <%= time_ago_in_words(@the_shop.created_at) %> ago
+      </dd>
+
+      <dt>
+        Updated at
+      </dt>
+      <dd>
+        <%= time_ago_in_words(@the_shop.updated_at) %> ago
+      </dd>
+    </dl>
+  </div>
+</div>
+
+<hr>
+
+
+<div>
+  <div>
+    <h2>
+      Edit shop
+    </h2>
+
+    <form action="/modify_shop/<%= @the_shop.id %>"  method="post" >
+      <div>
+        <label for="name_box">
+          Name
+        </label>
+
+        <input type="text" id="name_box" name="query_name" value="<%= @the_shop.name %>">
+      </div>
+
+      <div>
+        <label for="address_box">
+          Address
+        </label>
+
+        <input type="text" id="address_box" name="query_address" value="<%= @the_shop.address %>">
+      </div>
+
+      <div>
+        <label for="website_box">
+          Website
+        </label>
+
+        <input type="text" id="website_box" name="query_website" value="<%= @the_shop.website %>">
+      </div>
+
+      <div>
+        <label for="logo_box">
+          Logo
+        </label>
+
+        <input type="text" id="logo_box" name="query_logo" value="<%= @the_shop.logo %>">
+      </div>
+
+      <button>
+        Update shop
+      </button>
+    </form>
+  </div>
+</div>
+
+<hr>

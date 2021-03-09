@@ -1,0 +1,67 @@
+<script>
+  function employeeCheck () {
+    document.getElementById("employee").value = -document.getElementById("employee").value;
+    document.getElementById("store_id").disabled = !document.getElementById("store_id").disabled
+    document.getElementById("store_code").disabled = !document.getElementById("store_code").disabled
+  }
+</script>
+
+<h1>Sign up</h1>
+
+<form action="/insert_user" method="post">
+
+  <div class="form-group">
+    <label for="email_box">Email</label>
+    <input id="email_box" name="query_email" placeholder="Choose a email..." type="text">
+  </div>
+                 
+  <div class="form-group">
+    <label for="first_name_box">First name</label>
+      
+    <input type="text" id="first_name_box" name="query_first_name">
+  </div>
+         
+  <div class="form-group">
+    <label for="last_name_box">Last name</label>
+      
+    <input type="text" id="last_name_box" name="query_last_name">
+  </div>
+    
+  <div class="form-group">
+    <label for="password_box">Password</label>
+    <input id="password_box" name="query_password" placeholder="Choose a password..." type="password">
+  </div>
+
+  <div class="form-group">
+    <label for="password_confirmation_box">Password Confirmation</label>
+    <input id="password_confirmation_box" name="query_password_confirmation" placeholder="Confirm your password..." type="password">
+  </div>
+  <div class="p-2">
+    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseEmployee" aria-expanded="false" aria-controls="collapseEmployee" onclick="employeeCheck()">
+      I'm a Surf Shop employee
+    </button>
+    <input type="hidden" value="-1" id="employee" name="employee">
+    <div class="collapse" id="collapseEmployee">
+      <div class="card card-body">
+        <p>Enter your store's ID and verification code</p>
+        <div class="form-group">
+          <label for="store_id">Store ID</label>
+          <input type="text" id="store_id" name="store_id" disabled>
+        </div>
+        <div class="form-group">
+          <label for="store_code">Store Verification Code</label>
+          <input type="text" id="store_code" name="store_code" disabled>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button>
+    Sign up
+  </button>
+</form>
+
+<hr>
+
+<p>
+  Or, <a href="/user_sign_in">Sign in</a> instead.
+</p>

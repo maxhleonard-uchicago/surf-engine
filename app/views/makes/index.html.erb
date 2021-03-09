@@ -1,0 +1,118 @@
+<div>
+  <div>
+    <h1>
+      List of all makes
+    </h1>
+  </div>
+</div>
+
+<hr>
+
+<div>
+  <div>
+    <h2>
+      Add a new make
+    </h2>
+
+    <form action="/insert_make" method="post">
+      <div>
+        <label for="name_box">
+          Name
+        </label>
+
+        <input type="text" id="name_box" name="query_name">
+      </div>
+
+      <div>
+        <label for="webpage_box">
+          Webpage
+        </label>
+
+        <input type="text" id="webpage_box" name="query_webpage">
+      </div>
+
+      <div>
+        <label for="logo_box">
+          Logo
+        </label>
+
+        <input type="text" id="logo_box" name="query_logo">
+      </div>
+
+      <button>
+        Create make
+      </button>
+    </form>
+  </div>
+</div>
+
+<hr>
+<div>
+  <div>
+    <table>
+      <tr>
+        <th>
+          ID
+        </th>
+
+        <th>
+          Name
+        </th>
+
+        <th>
+          Webpage
+        </th>
+
+        <th>
+          Logo
+        </th>
+
+        <th>
+          Created at
+        </th>
+
+        <th>
+          Updated at
+        </th>
+
+        <th>
+        </th>
+      </tr>
+
+      <% @list_of_makes.each do |a_make| %>
+      <tr>
+        <td>
+          <%= a_make.id %>
+        </td>
+
+        <td>
+          <%= a_make.name %>
+        </td>
+
+        <td>
+          <%= a_make.webpage %>
+        </td>
+
+        <td>
+          <%= a_make.logo %>
+        </td>
+
+        <td>
+          <%= time_ago_in_words(a_make.created_at) %> ago
+        </td>
+        <td>
+          <%= time_ago_in_words(a_make.updated_at) %> ago
+        </td>
+
+        <td>
+          <a href="/makes/<%= a_make.id %>">
+            Show details
+          </a>
+        </td>
+      </tr>
+      <% end %>
+    </table>
+  </div>
+</div>
+
+<hr>

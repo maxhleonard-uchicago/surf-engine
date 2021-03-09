@@ -1,0 +1,134 @@
+<div>
+  <div>
+    <h1>
+      List of all models
+    </h1>
+  </div>
+</div>
+
+<hr>
+
+<div>
+  <div>
+    <h2>
+      Add a new model
+    </h2>
+
+    <form action="/insert_model" method="post">
+      <div>
+        <label for="name_box">
+          Name
+        </label>
+
+        <input type="text" id="name_box" name="query_name">
+      </div>
+
+      <div>
+        <label for="make_id_box">
+          Make
+        </label>
+
+        <input type="text" id="make_id_box" name="query_make_id">
+      </div>
+
+      <div>
+        <label for="image_box">
+          Image
+        </label>
+
+        <input type="text" id="image_box" name="query_image">
+      </div>
+
+      <div>
+        <label for="webpage_box">
+          Webpage
+        </label>
+
+        <input type="text" id="webpage_box" name="query_webpage">
+      </div>
+
+      <button>
+        Create model
+      </button>
+    </form>
+  </div>
+</div>
+
+<hr>
+<div>
+  <div>
+    <table>
+      <tr>
+        <th>
+          ID
+        </th>
+
+        <th>
+          Name
+        </th>
+
+        <th>
+          Make
+        </th>
+
+        <th>
+          Image
+        </th>
+
+        <th>
+          Webpage
+        </th>
+
+        <th>
+          Created at
+        </th>
+
+        <th>
+          Updated at
+        </th>
+
+        <th>
+        </th>
+      </tr>
+
+      <% @list_of_models.each do |a_model| %>
+      <tr>
+        <td>
+          <%= a_model.id %>
+        </td>
+
+        <td>
+          <%= a_model.name %>
+        </td>
+
+        <td>
+          <%= a_model.make_id %>
+        </td>
+
+        <td>
+          <%= a_model.image %>
+        </td>
+
+        <td>
+          <%= a_model.webpage %>
+        </td>
+
+        <td>
+          <%= time_ago_in_words(a_model.created_at) %> ago
+        </td>
+        <td>
+          <%= time_ago_in_words(a_model.updated_at) %> ago
+        </td>
+
+        <td>
+          <a href="/models/<%= a_model.id %>">
+            Show details
+          </a>
+        </td>
+      </tr>
+      <% end %>
+    </table>
+  </div>
+</div>
+
+<hr>
