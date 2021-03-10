@@ -25,6 +25,13 @@
 #
 class Board < ApplicationRecord
 
+  belongs_to(:model, {
+    :class_name => "Model",
+    :foreign_key => "model_id"
+  })
+
+
+
   def construction_str
     if self.construction == 0
       return "PU"
