@@ -1,2 +1,50 @@
-<h1><%= @shop.name%></h1>
-<img src=<%= @shop.logo %>>
+
+<div class="container-fluid h-100">
+  <div class="row p-2 h-100">
+    <div class="col-3 border border-primary">
+      <h2>Metrics Dashboard Coming Soon!</h2>
+    </div>
+    <div class="col">
+      <div class="row">
+        <div class="col">
+          <div class="card">
+            <h3 class="card-header">Manage Inventory</h3>
+            <div class="card-body">
+              <p class="card-text">Add, remove, and edit individual boards</p>
+              <a href="/shops/<%= @current_user.shop_id%>/employee/manage" class="btn btn-primary">Manage Inventory</a>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h3 class="card-header">Add Boards in Mass</h3>
+            <div class="card-body">
+              <p class="card-text">Upload multiple boards at a time using a CSV file</p>
+              <a href="/shops/<%= @current_user.shop_id%>/employee/upload" class="btn btn-primary">Upload</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="card">
+            <h3 class="card-header">Manage Store Profile</h3>
+            <div class="card-body">
+              <p class="card-text">Edit information about your shop</p>
+              <a href="/shops/<%= @current_user.shop_id%>/employee/profile" class="btn btn-primary">Edit Profile</a>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h3 class="card-header">Manage Surf Engine Subscription</h3>
+            <div class="card-body">
+              <p class="card-text">View and manage your Surf Engine subscription type and billing</p>
+              <a href="/shops/<%= @current_user.shop_id%>/employee/profile" class="btn btn-primary">View Subscription</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

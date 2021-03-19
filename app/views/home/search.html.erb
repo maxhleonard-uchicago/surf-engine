@@ -1,134 +1,159 @@
 
+
 <script>
-  function displayModels (){
-    var testing = document.getElementById("testing");
-    testing.innerText = "one";
-    var modelSelect = document.getElementById("model");
-    modelSelect.disabled = true;
-    var i, L = modelSelect.options.length - 1;
-    for(i = L; i >= 1; i--) {
-      modelSelect.remove(i);
-    }
-    testing.innerText = "two";
-    var ind = document.getElementById("make").value;
-    if (ind != "-1") {
-      fetch(`/makes/${ind}/models.json`)
-      .then(response => response.json())
-      .then((data) => {
-        data.forEach(model => {
+  function bindInfoWindow(marker, map, infowindow, html) {
+    marker.addListener('click', function() {
+        infowindow.setContent(html);
+        infowindow.open(map, this);
+    });
+  } 
+</script>
+
+<script>
+
+  var shopBoards = [];
+  var individualBoards = [];
+  var bothBoards = [];
+  var currently = "shops";
+  let map;
+  function initMap () {
+    var mapDiv = document.getElementById('map');
+
+    map = new google.maps.Map(mapDiv);
+
+    var bounds = new google.maps.LatLngBounds();
+    <% if @search %>
+      <% @individual_board_locations.each do |loc_id, boards| %>
+
+        contentStr = "<h5><%= boards[0].owner.name%></h5>" + "<ul>";
+        <% boards.each do |board| %>
+          contentStr += "<li><%= board.length_str%> <%= board.model.make.name%> <%= board.model.name%></li>";
           
-          var option = document.createElement("option");
-          option.text = model["model"]["name"];
-          option.value = model["model"]["id"];
-          modelSelect.add(option);
+        <% end %>
+        contentStr += "</ul>";
+
+        var infowindow = new google.maps.InfoWindow({
+          content: contentStr
         });
         
-        modelSelect.disabled = false;
-      })
+        var marker = new google.maps.Marker({
+          position: {lat: <%= boards[0].owner.lat%>, lng: <%= boards[0].owner.lon%>}, 
+          label: '<%= boards.count.to_s%>'
+        });
+        bindInfoWindow(marker, map, infowindow, contentStr);
+
+        indvidualBoards.push(marker);
+        bothBoards.push(marker);
+      <% end %>
+
+      <% @shop_board_locations.each do |loc_id, boards| %>
+
+        contentStr = '<h5><a href="/shops/<%=  loc_id%>"><%= boards[0].owner.name%></a></h5><ul>';
+        <% boards.each do |board| %>
+          contentStr += "<li> <%= board.length_str %> <%= board.model.make.name %>  <%= board.model.name %></li>";
+        <% end %>
+        contentStr += "</ul>";
+
+        var infowindow = new google.maps.InfoWindow({
+          content: contentStr
+        });
+        
+        var marker = new google.maps.Marker({
+          position: {lat: <%= boards[0].owner.lat%>, lng: <%= boards[0].owner.lon%>}, 
+          label: '<%= boards.count.to_s%>'
+        });
+
+        bindInfoWindow(marker, map, infowindow, contentStr);
+        
+        shopBoards.push(marker);
+        bothBoards.push(marker);
+      <% end %>
+    <% end %>
+    var bounds = new google.maps.LatLngBounds();
+    for (var i = 0; i < bothBoards.length; i++) {
+      bounds.extend(bothBoards[i].getPosition());
     }
-  }
-
-  function convertWidth(sixteen) {
-    if (sixteen == 0) {
-      var fraction = ""
-    } else if (sixteen == 2) {
-      var fraction = "1/8";
-    } else if (sixteen == 4) {
-      var fraction = "1/4";
-    } else if (sixteen == 6) {
-      var fraction = "3/8";
-    } else if (sixteen == 8) {
-      var fraction = "1/2";
-    } else if (sixteen == 10) {
-      var fraction = "5/8";
-    } else if (sixteen == 12) {
-      var fraction = "3/4";
-    } else if (sixteen == 14) {
-      var fraction = "7/8";
-    } else {
-      var fraction = sixteen.toString() + "/16";
-    }
-    return fraction
-  }
-
-  function sliderChange(field, side){
     
-    var maxSlider = document.getElementById("max_" + field);
-    var minSlider = document.getElementById("min_" + field);
-    var maxLabel = document.getElementById("max_" + field + "_label");
-    var minLabel = document.getElementById("min_" + field + "_label");
-    
+    map.fitBounds(bounds);
 
-    
-
-    minSlider.max = maxSlider.value;
-    maxSlider.min = minSlider.value;
-    
-    if (field == "length") {
-      
-      let min_feet = Math.floor(minSlider.value / 12);
-      let min_inches = minSlider.value % 12;
-      let max_feet = Math.floor(maxSlider.value / 12);
-      let max_inches = maxSlider.value % 12;
-  
-      maxLabel.innerText = "Maximum: " + max_feet.toString() + "'" + max_inches.toString() + '"';
-      minLabel.innerText = "Minimum: " + min_feet.toString() + "'" + min_inches.toString() + '"';
-
-    } else if (field == "width" || field == "thickness") {
-      let min_inches = Math.floor(minSlider.value / 16);
-      let sixteen_min = minSlider.value % 16;
-      minLabel.innerText = "Minimum: " + min_inches.toString() + " " + convertWidth(sixteen_min);
-      let max_inches = Math.floor(maxSlider.value / 16);
-      let sixteen_max = maxSlider.value % 16;
-      maxLabel.innerText = "Maximum: " + max_inches.toString() + " " + convertWidth(sixteen_max);
-    } else if (field == "volume") {
-      maxLabel.innerText = "Maximum: " + maxSlider.value.toString() + " L";
-      minLabel.innerText = "Minimum: " + minSlider.value.toString() + " L";
-    } else if (field == "price") {
-      maxLabel.innerText = "Maximum: $" + maxSlider.value.toString();
-      minLabel.innerText = "Maximum: $" + minSlider.value.toString();
-    }
+    addMarkers(shopBoards);
   }
   
-
-  function enableFields(field) {
-    if (field == "length") {
-      document.getElementById("min_length").disabled = !document.getElementById("min_length").disabled;
-      document.getElementById("max_length").disabled = !document.getElementById("max_length").disabled;
-    } else if (field == "width") {
-      document.getElementById("min_width").disabled = !document.getElementById("min_width").disabled;
-      document.getElementById("max_width").disabled = !document.getElementById("max_width").disabled;
-    } else if (field == "thickness") {
-      document.getElementById("min_thickness").disabled = !document.getElementById("min_thickness").disabled;
-      document.getElementById("max_thickness").disabled = !document.getElementById("max_thickness").disabled;
-    } else if (field == "volume") {
-      document.getElementById("min_volume").disabled = !document.getElementById("min_volume").disabled;
-      document.getElementById("max_volume").disabled = !document.getElementById("max_volume").disabled;
-    } else if (field == "price") {
-      document.getElementById("min_price").disabled = !document.getElementById("min_price").disabled;
-      document.getElementById("max_price").disabled = !document.getElementById("max_price").disabled;
+  function addMarkers(arr) {
+    for (let i = 0; i < arr.length; i++) {
+      arr[i].setMap(map);
     }
   }
-
-  function shopName() {
-    if (document.getElementById("store").checked) {
-      document.getElementById("shop_name").disabled = false;
-    } else {
-      document.getElementById("shop_name").disabled = true;
+  function removeMarkers(arr){
+    for (let i = 0; i < arr.length; i++) {
+      arr[i].setMap(null);
+    }
+  }
+  function changeMarkers(which) {
+    if (which == "shops") {
+      if (currently == "both") {
+        removeMarkers(bothBoards);
+        addMarkers(shopBoards);
+      } else if (currently == "individuals") {
+        removeMarkers(individualBoards);
+        addMarkers(shopBoards);
+      }
+      currently = "shops";
+    } else if (which == "individuals") {
+      if (currently == "both") {
+        removeMarkers(bothBoards);
+        addMarkers(individualBoards);
+      } else if (currently == "shops") {
+        removeMarkers(shopBoards);
+        addMarkers(individualBoards);
+      }
+      currently = "individuals";
+    } else if (which == "both") {
+      if (currently == "shops") {
+        removeMarkers(shopBoards);
+        addMarkers(bothBoards);
+      } else if (currently == "individuals") {
+        removeMarkers(individualBoards);
+        addMarkers(bothBoards);
+      }
+      currently = "both";
     }
   }
 
 </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV.fetch("MAPS_KEY")%>&callback=initMap"
+async defer></script>
 
+<script>
+  $(document).ready(function() {
+    $('#example').DataTable();
+  });
+</script>
+
+<script>
+  window.onload = function () {
+    <% if !@search %>
+    var buttons = document.getElementsByClassName("data-button");
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].disabled = true;
+      buttons[i].className = "btn btn-secondary data-button"
+    }
+    document.getElementById("mapDiv").className = "d-none";
+    document.getElementById("listDiv").className = "d-none";
+    document.getElementById("cardDiv").className = "d-none";
+    document.getElementById("blankDiv").className = "h-100"
+    <% end %>
+  };
+</script>
 
 <% if @current_user != nil %>
   <div class="w=100 text-center">
     <h2>Boards for you!</h2>
   </div>
 <% end %>
-<div class="container-fluid overflow-auto">
-  <div class="row">
-    <div class="col-3">
+<div class="d-flex flex-row h-100" style="overflow:hidden">
+  
+    <div class="col-3" style="overflow-y:scroll">
       <div class="text-center align-middle p-2">
         <h3>Board Search</h3>
       </div>
@@ -176,7 +201,7 @@
                 <div class="card-body">
                   <div class="form-group">
                     <div class="custom-control custom-checkbox m-2">
-                      <input type="checkbox" class="custom-control-input" id="length" name="length" value="1" onclick="enableFields('length')">
+                      <input type="checkbox" class="custom-control-input" id="length" name="length" value="1" onclick="enableRangeField('length')">
                       <label class="custom-control-label" for="length">Length</label>
                     </div>
                     <label for="min_length" id="min_length_label">Minimum: 5'0"</label>
@@ -188,7 +213,7 @@
 
                   <div class="form-group">
                     <div class="custom-control custom-checkbox m-2">
-                      <input type="checkbox" class="custom-control-input" id="width" name="width" value="1" onclick="enableFields('width')">
+                      <input type="checkbox" class="custom-control-input" id="width" name="width" value="1" onclick="enableRangeField('width')">
                       <label class="custom-control-label" for="width">Width</label>
                     </div>
                     <label for="min_width" id="min_width_label">Minimum: 18 1/4</label>
@@ -200,7 +225,7 @@
 
                   <div class="form-group">
                     <div class="custom-control custom-checkbox m-2">
-                      <input type="checkbox" class="custom-control-input" id="thickness" name="thickness" value="1" onclick="enableFields('thickness')">
+                      <input type="checkbox" class="custom-control-input" id="thickness" name="thickness" value="1" onclick="enableRangeField('thickness')">
                       <label class="custom-control-label" for="thickness">Thickness</label>
                     </div>
                     <label for="min_thickness" id="min_thickness_label">Minimum: 2 1/4</label>
@@ -212,7 +237,7 @@
 
                   <div class="form-group">
                     <div class="custom-control custom-checkbox m-2">
-                      <input type="checkbox" class="custom-control-input" id="volume" name="volume" value="1" onclick="enableFields('volume')">
+                      <input type="checkbox" class="custom-control-input" id="volume" name="volume" value="1" onclick="enableRangeField('volume')">
                       <label class="custom-control-label" for="volume">Volume</label>
                     </div>
                     <label for="min_volume" id="min_volume_label">Minimum: 20 L</label>
@@ -236,7 +261,7 @@
                 <div class="card-body">
                   <div class="form-group">
                     <div class="custom-control custom-checkbox m-2">
-                      <input type="checkbox" class="custom-control-input" id="price" name="price" value="1" onclick="enableFields('price')">
+                      <input type="checkbox" class="custom-control-input" id="price" name="price" value="1" onclick="enableRangeField('price')">
                       <label class="custom-control-label" for="price">Price</label>
                     </div>
                     <label for="min_price" id="min_price_label">Minimum: $400</label>
@@ -366,15 +391,164 @@
       </div>
     </div>
     </div>
-    <div class="col border">
-      <% if @search %>
-        <% @boards.each do |board|%>
-          <h1><%= board.model.name %></h1>
-        <% end %>
-      <% else %>
-        <h1>Select some filters to find boards!</h1>
-      <% end %>
+    <div class="col border d-flex flex-column p-2" style="overflow:hidden">
+      <div class="d-flex p-2 border">
+        <div class="flex-grow-1">
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <button type="button" id="shopsButton" class="btn btn-primary data-button" onclick="sellerButtons('shops')">Shops</button>
+            <button type="button" id="individualsButton" class="btn btn-secondary data-button" onclick="sellerButtons('individuals')">Individuals</button>
+            <button type="button" id="bothButton" class="btn btn-secondary data-button" onclick="sellerButtons('both')">Both</button>
+          </div>
+        </div>
+        <div>
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <button type="button" id="mapButton" class="btn btn-primary data-button" onclick="displayButtons('map')">Map</button>
+            <button type="button" id="listButton" class="btn btn-secondary data-button" onclick="displayButtons('list')">List</button>
+            <button type="button" id="cardButton" class="btn btn-secondary data-button" onclick="displayButtons('card')">Cards</button>
+          </div>
+        </div>
+      </div>
+      <div class="flex-grow-1" style="overflow:hidden">
+        <div id="mapDiv" class="bg-primary h-100">
+          <div id="map" class="h-100 w-100"></div>
+        </div>
+        <div id="listDiv" class="h-100 d-none">
+          <link href=https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css rel=stylesheet>
+          <link href=https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.20/css/dataTables.bootstrap4.min.css rel=stylesheet>
+          <div class=container-fluid>
+            <table cellspacing=0 class="table table-bordered table-hover table-inverse table-striped"id=example width=100%>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Shaper</th>
+                  <th>Model</th>
+                  <th>Length</th>
+                  <th>Width</th>
+                  <th>Thickness</th>
+                  <th>Volume</th>
+                  <th>Seller</th>
+                  <th>Price</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tfoot>
+                <tr>
+                  <th></th>
+                  <th>Shaper</th>
+                  <th>Model</th>
+                  <th>Length</th>
+                  <th>Width</th>
+                  <th>Thickness</th>
+                  <th>Volume</th>
+                  <th>Seller</th>
+                  <th>Price</th>
+                  <th></th>
+                </tr>
+              </tfoot>
+              <tbody>
+                <% @boards.each do |board|%>
+                <% if board.owner_is_shop %>
+                <tr class="shop-board">
+                <% else %>
+                <tr class="individual-board d-none">
+                <% end %>
+                  <td><a class="btn btn-primary" href="/boards/<%= board.id%>">Details</a>
+                  <td><%= board.make.name %></td>
+                  <td><%= board.model.name %></td>    
+                  <td><%= board.length_str %></td>
+                  <td><%= board.width_str %></td>
+                  <td><%= board.thickness_str %></td>
+                  <td><%= board.liters %></td>
+                  <% if board.owner_is_shop %>             
+                  <td><a href="/shops/<%= board.owner.id%>"><%= board.owner.name %></a></td>
+                  <% else %>
+                  <td><%= board.owner.first_name + " " + board.owner.last_name %></td>
+                  <% end %>
+                  <td>$<%= board.price %></td>
+                  <td>
+                    <% if @current_user != nil %>
+                      <% if @bookmarks.include?(board.id) %>
+                      <button type="button" id="list_bookmark_<%= board.id%>" class="btn btn-primary saved" onclick="listBookmark('<%= board.id%>', '<%= @current_user.id%>')">Un-save Board</button>
+                      <% else %>
+                      <button type="button" id="list_bookmark_<%= board.id%>" class="btn btn-success unsaved" onclick="listBookmark('<%= board.id%>', '<%= @current_user.id%>')">Save Board</button>
+                      <% end %>
+                    <% else %>
+                      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#bookmarkModal">Save Board</button>
+                    <% end %>
+                  </td>
+                </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+              <script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.20/js/jquery.dataTables.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.20/js/dataTables.bootstrap4.min.js></script>
+        </div>
+        <div id="cardDiv" class="h-100 d-none" style="overflow:hidden">
+        <% (1..(@boards.count/25).ceil).each do |n| %>
+          <% if n == 1%>
+          <div class="d-flex flex-row flex-wrap justify-content-around cardsPage active" id="cardsPage<%= n.to_s%>" style="overflow-y:scroll">
+          <% else %>
+          <div class="d-none cardsPage" id="cardsPage<%= n.to_s%>" style="overflow-y:scroll">
+          <% end %>
+            <% @boards[(n-1)*25..n*25].each do |board| %>
+            <% if board != nil %>
+              <% if board.owner_is_shop %>
+              <div class="card shop-board">
+              <% else %>
+              <div class="card individual-board d-none">
+              <% end %>
+                <div class="card-header d-flex flex-row">
+                  <h4 class="flex-grow-1 align-self-center"><%= board.length_str + " " + board.model.name %></h4>
+                  <% if @current_user != nil %>
+                    <% if @bookmarks.include?(board.id) %>
+                    <button class="btn-primary align-self-center saved" id="card_bookmark_<%= board.id%>" style="width:30px;height:30px;border-radius:15px;outline:none" onclick="cardBookmark('<%= board.id%>', '<%= @current_user.id%>')">-</button>
+                    <% else %>
+                    <button class="btn-success align-self-center unsaved" id="card_bookmark_<%= board.id%>" style="width:30px;height:30px;border-radius:15px;outline:none" onclick="cardBookmark('<%= board.id%>', '<%= @current_user.id%>')">+</button>
+                    <% end %>
+                  <% else %>
+                    <button class="btn-success align-self-center" style="width:30px;height:30px;border-radius:15px;outline:none" class="btn btn-success" data-toggle="modal" data-target="#bookmarkModal">+</button>
+                  <% end %>
+                </div>
+                <img src="<%= board.model.image%>" alt="Card image" style="height:400px;width:auto">
+                <div class="card-body">
+                  <p class="card-text">Board details.</p>
+                </div>
+              </div>
+              <% end %>
+            <% end %>
+          </div>
+          <% end %>
+          <div class="h-10">
+            <nav aria-label="Page navigation example">
+              <ul class="pagination">
+                <li class="page-item">
+                  <button class="page-link" onclick="paginateCards(-2)" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">Previous</span>
+                  </button>
+                </li>
+                <% (1..(@boards.count/25).floor).each do |n| %>
+                  <% if n == 1%>
+                  <li class="page-item cardsButton active" id="page_button_<%= n.to_s%>"><button class="page-link" onclick="paginateCards(<%= n%>)"><%= n.to_s%></button></li>
+                  <% else %>
+                  <li class="page-item cardsButton" id="page_button_<%= n.to_s%>"><button class="page-link" onclick="paginateCards(<%= n%>)"><%= n.to_s%></button></li>
+                  <% end %>
+                <% end %>
+                <li class="page-item">
+                  <button class="page-link" aria-label="Next" onclick="paginateCards(-1)">
+                    <span aria-hidden="true">&raquo;</span>
+                    <span class="sr-only">Next</span>
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+        <div id="blankDiv" class="h-100 d-none">
+          <h1>Choose some filters!</h1>
+        </div>
+      </div>
     </div>
-  </div>
+  
 </div>
 

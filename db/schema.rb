@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_10_003025) do
+ActiveRecord::Schema.define(version: 2021_03_14_013126) do
 
   create_table "boards", force: :cascade do |t|
     t.integer "model_id"
@@ -30,6 +30,13 @@ ActiveRecord::Schema.define(version: 2021_03_10_003025) do
     t.boolean "artwork"
     t.float "price"
     t.text "notes"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "bookmarks", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "board_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -58,6 +65,7 @@ ActiveRecord::Schema.define(version: 2021_03_10_003025) do
     t.string "webpage"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "logo"
   end
 
   create_table "shops", force: :cascade do |t|
@@ -68,6 +76,8 @@ ActiveRecord::Schema.define(version: 2021_03_10_003025) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "verification"
+    t.float "lat"
+    t.float "lon"
   end
 
   create_table "users", force: :cascade do |t|
@@ -80,6 +90,8 @@ ActiveRecord::Schema.define(version: 2021_03_10_003025) do
     t.boolean "employee"
     t.integer "shop_id"
     t.string "address"
+    t.float "lat"
+    t.float "lon"
   end
 
 end

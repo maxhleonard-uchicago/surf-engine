@@ -1,31 +1,21 @@
 class ShopsController < ApplicationController
-  def index
-    matching_shops = Shop.all
-
-    @list_of_shops = matching_shops.order({ :created_at => :desc })
-
-    render({ :template => "shops/index.html.erb" })
-  end
-
-  def check_user(shop_id)
+  
+  before_action :check_user
+  def check_user
+    shop_id = params.fetch("shop_id").to_i
     if @current_user == nil
-      return false
+      puts "1"
+      redirect_to("/")
     elsif @current_user.shop_id != shop_id
-      return false
+      puts @current_user.shop_id
+      puts shop_id
+      redirect_to("/")
     else
-      return true
+      @shop = Shop.where({:id => shop_id})
     end
   end
 
-  def show
-    the_id = params.fetch("path_id")
-
-    matching_shops = Shop.where({ :id => the_id })
-
-    @the_shop = matching_shops.at(0)
-
-    render({ :template => "shops/show.html.erb" })
-  end
+  
 
   def create
     the_shop = Shop.new
@@ -69,14 +59,22 @@ class ShopsController < ApplicationController
   end
 
   def home
-    shop_id = params.fetch("shop_id").to_i
-    if !check_user(shop_id)
-      redirect_to("/")
-    else
-      @shop = Shop.where({:id => shop_id}).first
-      render({:template => "shops/home.html.erb"})
-    end
+    render({:template => "/shops/home.html.erb"})
   end
 
+  def upload
+    render({:template => "/shops/upload.html.erb"})
+  end
 
+  def upload_results
+    file = params[:file]
+    csv_text = File.read(file.path)
+    @new_boards = CSV.parse(csv_text, :headers => true, :encoding => "ISO-8859-1")
+    
+    render({:template => "/shops/upload_results.html.erb"})
+  end
+
+  def download_template
+    send_file("#{Rails.root}/public/board_upload_template.xlsx", :disposition => 'attachment')
+  end
 end

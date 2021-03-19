@@ -1,0 +1,16 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-3">
+      <h2>How to use mass board upload<h2>
+      <a class="btn btn-primary" href="/shops/<%= @current_user.shop_id%>/employee/upload_template">Download Template</a>
+    </div>
+    <div class="col">
+      <form action="/shops/<%= @current_user.shop_id%>/employee/upload_results">
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" id="customFile">
+          <label class="custom-file-label" for="customFile">Choose file</label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Upload</button>
+      </form>
+  </div>
+</div>

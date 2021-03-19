@@ -30,7 +30,17 @@ class Board < ApplicationRecord
     :foreign_key => "model_id"
   })
 
+  has_one(:make, {
+    :through => :model
+  })
 
+  def owner 
+    if self.owner_is_shop 
+      return Shop.where({:id => self.shop_id}).first
+    else 
+      return User.where(:id => self.individual_id).first
+    end
+  end
 
   def construction_str
     if self.construction == 0
@@ -89,7 +99,7 @@ class Board < ApplicationRecord
   def length_str
     feet = (self.length / 12).floor
     inches = self.length % 12
-    return feet.to_s + "'" + inches.to_s + '"'
+    return feet.to_s + "'" + inches.to_s + '"';
   end
 
   def convert_sixteen(sixteen)

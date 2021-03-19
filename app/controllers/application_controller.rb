@@ -19,11 +19,23 @@ class ApplicationController < ActionController::Base
   def load_data
     @makes = Make.all
     @shops = Shop.all
+    if @current_user != nil
+      @bookmarks = @current_user.bookmarks.map_relation_to_array(:board_id)
+    else
+      @bookmarks = Array.new
+    end
   end
+
   def home
     load_data()
     @search = false
     @shops = Array.new
     render({:template => "home/search.html.erb"})
   end
+
+
+  def test
+    render({:template => "/home/test.html.erb"})
+  end
+
 end

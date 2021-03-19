@@ -4,7 +4,9 @@
 #
 #  id           :integer          not null, primary key
 #  address      :string
+#  lat          :float
 #  logo         :string
+#  lon          :float
 #  name         :string
 #  verification :string
 #  website      :string

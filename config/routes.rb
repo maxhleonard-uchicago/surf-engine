@@ -1,5 +1,24 @@
 Rails.application.routes.draw do
 
+  # Routes for the Bookmark resource:
+
+  # CREATE
+  post("/insert_bookmark", { :controller => "bookmarks", :action => "create" })
+          
+  # READ
+  get("/bookmarks", { :controller => "bookmarks", :action => "index" })
+  
+  get("/bookmarks/:path_id", { :controller => "bookmarks", :action => "show" })
+  
+  # UPDATE
+  
+  post("/modify_bookmark/:path_id", { :controller => "bookmarks", :action => "update" })
+  
+  # DELETE
+  get("/delete_bookmark/:path_id", { :controller => "bookmarks", :action => "destroy" })
+
+  #------------------------------
+
   # Routes for the Distance resource:
 
   # CREATE
@@ -27,7 +46,7 @@ Rails.application.routes.draw do
   # READ
   get("/boards", { :controller => "boards", :action => "index" })
   
-  get("/boards/:path_id", { :controller => "boards", :action => "show" })
+  get("/boards/:board_id", { :controller => "boards", :action => "show" })
   
   # UPDATE
   
@@ -56,6 +75,14 @@ Rails.application.routes.draw do
   get("/delete_shop/:path_id", { :controller => "shops", :action => "destroy" })
 
   get("/shops/:shop_id/employee", { :controller => "shops", :action => "home"})
+
+  get("/shops/:shop_id/employee/manage", {:controller => "shops", :action => "manage"})
+
+  get("/shops/:shop_id/employee/upload", {:controller => "shops", :action => "upload"})
+
+  get("/shops/:shop_id/employee/upload_template", {:controller => "shops", :action => "download_template"})
+
+  get("/shops/:shop_id/employee/upload_results", {:controller => "shops", :action => "upload_results"})
 
   #------------------------------
 
@@ -129,8 +156,14 @@ Rails.application.routes.draw do
              
   #------------------------------
 
-  get("/", {:controller => "application", :action => "home"})
+  get("/", {:controller => "search", :action => "search"})
 
   get("/results", {:controller => "search", :action => "search"})
+
+  post("/users/:user_id/saves/:board_id/add", {:controller => "profile", :action => "add_bookmark"})
+
+  post("/users/:user_id/saves/:board_id/delete", {:controller => "profile", :action => "delete_bookmark"})
+
+  get("/test", {:controller => "application", :action => "test"})
 
 end
