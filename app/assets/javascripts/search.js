@@ -26,7 +26,7 @@ function displayModels (){
 }
 
 
-function convertWidth(sixteen) {
+function convertSixteen(sixteen) {
   if (sixteen == 0) {
     var fraction = ""
   } else if (sixteen == 2) {
@@ -56,6 +56,31 @@ function enableRangeField(field) {
   document.getElementById("min_" + field).disabled = !document.getElementById("min_" + field).disabled;
   document.getElementById("max_" + field).disabled = !document.getElementById("max_" + field).disabled;
 
+}
+
+function sliderChange(field, side) {
+  var minLabel = document.getElementById("min_" + field + "_label");
+  var maxLabel = document.getElementById("max_" + field + "_label");
+  var minRange = document.getElementById("min_" + field);
+  var maxRange = document.getElementById("max_" + field);
+  if (side == "min") {
+    maxRange.min = minRange.value;
+  } else if (side == "max") {
+    minRange.max = maxRange.value;
+  }
+  if (field == "length") {
+    minLabel.innerText = "Minimum: " + Math.floor((minRange.value / 12)).toString() + "'" + (minRange.value % 12).toString() + '"';
+    maxLabel.innerText = "Maximum: " + Math.floor((maxRange.value / 12)).toString() + "'" + (maxRange.value % 12).toString() + '"';
+  } else if (["width","thickness"].includes(field)) {
+    minLabel.innerText = "Minimum: " + Math.floor((minRange.value / 16)).toString() + " " + convertSixteen(minRange.value % 16);
+    maxLabel.innerText = "Maximum: " + Math.floor((maxRange.value / 16)).toString() + " " + convertSixteen(maxRange.value % 16);
+  } else if (field == "volume") {
+    minLabel.innerText = "Minimum: " + minRange.value.toString() + " L";
+    maxLabel.innerText = "Maximum: " + maxRange.value.toString() + " L";
+  } else if (field == "price") {
+    minLabel.innerText = "Minimum: $" + minRange.value.toString();
+    maxLabel.innerText = "Maximum: $" + maxRange.value.toString();
+  }
 }
 
 
