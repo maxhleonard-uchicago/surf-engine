@@ -412,7 +412,7 @@ async defer></script>
         <div id="mapDiv" class="bg-primary h-100">
           <div id="map" class="h-100 w-100"></div>
         </div>
-        <div id="listDiv" class="h-100 d-none">
+        <div id="listDiv" class="h-100 d-none" style="overflow-y:scroll">
           <link href=https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css rel=stylesheet>
           <link href=https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.20/css/dataTables.bootstrap4.min.css rel=stylesheet>
           <div class=container-fluid>
@@ -484,20 +484,20 @@ async defer></script>
               <script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.20/js/jquery.dataTables.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.20/js/dataTables.bootstrap4.min.js></script>
         </div>
         <div id="cardDiv" class="h-100 d-none" style="overflow:hidden">
-        <% (1..(@boards.count/25).ceil).each do |n| %>
+        <% (1..(@boards.count/25)+1).each do |n| %>
           <% if n == 1%>
           <div class="d-flex flex-row flex-wrap justify-content-around cardsPage active" id="cardsPage<%= n.to_s%>" style="overflow-y:scroll">
           <% else %>
           <div class="d-none cardsPage" id="cardsPage<%= n.to_s%>" style="overflow-y:scroll">
           <% end %>
-            <% @boards[(n-1)*25..n*25].each do |board| %>
+            <% @boards[(n-1)*25..(n*25-1)].each do |board| %>
             <% if board != nil %>
               <% if board.owner_is_shop %>
               <div class="card shop-board">
               <% else %>
               <div class="card individual-board d-none">
               <% end %>
-                <div class="card-header d-flex flex-row">
+                <div class="card-header d-flex flex-row flex-grow-1">
                   <h4 class="flex-grow-1 align-self-center"><%= board.length_str + " " + board.model.name %></h4>
                   <% if @current_user != nil %>
                     <% if @bookmarks.include?(board.id) %>
@@ -511,14 +511,14 @@ async defer></script>
                 </div>
                 <img src="<%= board.model.image%>" alt="Card image" style="height:400px;width:auto">
                 <div class="card-body">
-                  <p class="card-text">Board details.</p>
+                  <a class="card-link" href="/boards/<%= board.id%>">Board details</a>
                 </div>
               </div>
               <% end %>
             <% end %>
           </div>
           <% end %>
-          <div class="h-10">
+          <div style="overflow-x:scroll;height:400px;">
             <nav aria-label="Page navigation example">
               <ul class="pagination">
                 <li class="page-item">
@@ -527,11 +527,11 @@ async defer></script>
                     <span class="sr-only">Previous</span>
                   </button>
                 </li>
-                <% (1..(@boards.count/25).floor).each do |n| %>
+                <% (1..(@boards.count/25)+1).each do |n| %>
                   <% if n == 1%>
-                  <li class="page-item cardsButton active" id="page_button_<%= n.to_s%>"><button class="page-link" onclick="paginateCards(<%= n%>)"><%= n.to_s%></button></li>
+                  <li class="page-item cardsButton active" id="page_button_<%= n.to_s%>"><button class="page-link" onclick="paginateCards(<%= n-1%>)"><%= n.to_s%></button></li>
                   <% else %>
-                  <li class="page-item cardsButton" id="page_button_<%= n.to_s%>"><button class="page-link" onclick="paginateCards(<%= n%>)"><%= n.to_s%></button></li>
+                  <li class="page-item cardsButton" id="page_button_<%= n.to_s%>"><button class="page-link" onclick="paginateCards(<%= n-1%>)"><%= n.to_s%></button></li>
                   <% end %>
                 <% end %>
                 <li class="page-item">

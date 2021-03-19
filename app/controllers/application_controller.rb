@@ -38,4 +38,11 @@ class ApplicationController < ActionController::Base
     render({:template => "/home/test.html.erb"})
   end
 
+  def show_shop
+    shop_id = params.fetch("shop_id").to_i
+    @shop = Shop.where({:id => shop_id}).first
+    @boards = Board.where({:shop_id => shop_id})
+    render({:template => "shops/show.html.erb"})
+  end
+
 end

@@ -9,4 +9,9 @@
 #  user_id    :integer
 #
 class Bookmark < ApplicationRecord
+
+  belongs_to(:board, {
+    :class_name => "Board",
+    :foreign_key => "board_id"
+  })
 end

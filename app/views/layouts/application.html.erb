@@ -63,7 +63,7 @@
             <a href="/user_sign_in" class="btn btn-primary m-2">Login</a>
             <a href="/user_sign_up" class="btn btn-primary m-2">Sign Up</a>
           <% else %>
-            <a href="/user/<%= @current_user.id%>" class="btn btn-primary m-2">Profile</a>
+            <a href="/users/<%= @current_user.id%>" class="btn btn-primary m-2">Profile</a>
             <a href="/user_sign_out" class="btn btn-primary m-2">Log Out</a>
           <% end %>
         </div>

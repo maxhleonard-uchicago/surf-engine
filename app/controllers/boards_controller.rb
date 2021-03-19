@@ -8,12 +8,9 @@ class BoardsController < ApplicationController
   end
 
   def show
-    the_id = params.fetch("board_id")
-
-    matching_boards = Board.where({ :id => the_id })
-
-    @the_board = matching_boards.at(0)
-
+    board_id = params.fetch("board_id").to_i
+    @board = Board.where({:id => board_id}).first
+    puts @board.model.name
     render({ :template => "boards/show.html.erb" })
   end
 

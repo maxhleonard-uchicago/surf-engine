@@ -210,7 +210,7 @@ function cardBookmark(board_id, user_id) {
 
 
 function paginateCards(page) {
-  
+  page = parseInt(page);
   var cardButtons = document.getElementsByClassName("cardsButton");
   var cardPages = document.getElementsByClassName("cardsPage");
   for (let i = 0; i < cardButtons.length; i++) {

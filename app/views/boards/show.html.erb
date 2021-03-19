@@ -1,2 +1,25 @@
 <div class="container-fluid">
-  <div>
+  <div class="row p-2">
+    <div class="col-3 border border-primary">
+      <div class="h-100">
+        <img src="<%= @board.model.image%>" style="width:100%">
+      </div>
+    </div>
+    <div class="col">
+      <ul class="list-group">
+        <li class="list-group-item">Model: <%= @board.model.name%></li>
+        <li class="list-group-item">Length: <%= @board.length_str%></li>
+        <li class="list-group-item">Width: <%= @board.width_str%></li>
+        <li class="list-group-item">Thickness: <%= @board.thickness_str%></li>
+        <li class="list-group-item">Volume: <%= @board.liters%></li>
+        <li class="list-group-item">Tail Type: <%= @board.tail_str%></li>
+        <li class="list-group-item">Fin Configuration: <%= @board.fin_config_str%></li>
+        <li class="list-group-item">Fin System: <%= @board.fin_system_str%></li>
+        <li class="list-group-item">Construction: <%= @board.construction_str%></li>
+        <li class="list-group-item">Condition: <%= @board.condition_str%></li>
+        <li class="list-group-item">Store: <a href="/shops/<%= @board.owner.id%>"><%= @board.owner.name%></a></li>
+        <li class="list-group-item">Price: <%= @board.price%></li>
+      </ul>
+    </div>
+  </div>
+</div>

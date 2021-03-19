@@ -1,1 +1,16 @@
-<h1>Welcome <%= @current_user.name%>!</h1>
+<h1>Welcome <%= @current_user.first_name + @current_user.last_name%>!</h1>
+<div class="container-fluid">
+  <div class="row border border-primary">
+    <div class="col">
+      <h3>Your Saved Boards</h3>
+      <ul class="list-group">
+        <% @bookmarks.each do |bookmark| %>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <%= bookmark.board.length_str + " " + bookmark.board.make.name + " " + bookmark.board.model.name + " at " + bookmark.board.owner.name%>
+          <a href="/boards/<%= bookmark.board.id%>"><span class="badge badge-primary badge-pill">Details</span></a>
+        </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -14,4 +14,9 @@
 #  updated_at   :datetime         not null
 #
 class Shop < ApplicationRecord
+  
+  has_many(:boards, {
+    :class_name => "Board",
+    :foreign_key => "shop_id"
+  })
 end

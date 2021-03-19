@@ -41,6 +41,24 @@ class Board < ApplicationRecord
       return User.where(:id => self.individual_id).first
     end
   end
+  
+  def tail_str
+    if self.tail == 0
+      return "Squash"
+    elsif self.tail == 1
+      return "Square"
+    elsif self.tail == 2
+      return "Round"
+    elsif self.tail == 3
+      return "Pin"
+    elsif self.tail == 4
+      return "Swallow"
+    elsif self.tail == 5
+      return "Bat"
+    elsif self.tail == 6
+      return "Diamond"
+    end
+  end
 
   def construction_str
     if self.construction == 0
